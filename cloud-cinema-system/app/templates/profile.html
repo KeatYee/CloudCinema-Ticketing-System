@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Your Profile</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('main.index') }}">← Back to Movies</a>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+                {% if session.get('role') == 'admin' %}
+                    <a href="{{ url_for('admin.admin_index') }}">Admin</a>
+                {% endif %}
+            {% else %}
+                <div>Hi, Guest</div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div style="max-width:900px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
+        <h1 style="color:#e50914;">Your Bookings</h1>
+        {% if bookings %}
+            <ul style="list-style:none;padding:0;margin:0;">
+                {% for b in bookings %}
+                    <li style="padding:12px;border:1px solid #333;margin-bottom:12px;border-radius:6px;">
+                        <strong>{{ b.show.title }}</strong><br>
+                        <small>{{ b.show.show_date }} {{ b.show.show_time }} — {{ b.show.screen_name }}</small>
+                        <p>Seats: {% for s in b.seats %}{{ s.seat_row }}{{ s.seat_number }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+                        <p>Booked: {{ b.booking.booking_time }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No bookings yet. Book a seat from a movie page.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

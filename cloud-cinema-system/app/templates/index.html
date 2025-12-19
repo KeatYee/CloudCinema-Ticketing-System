@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Cinema | Now Showing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">🎬 CLOUD CINEMA</div>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+                {% if session.get('role') == 'admin' %}
+                    <a href="{{ url_for('admin.admin_index') }}">Admin</a>
+                {% endif %}
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.register') }}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <header>
+        <h1>Blockbuster Movies</h1>
+        <p>Experience the magic of cinema in the cloud</p>
+    </header>
+
+    <div class="movie-container">
+        {% for movie in movies %}
+        <div class="movie-card">
+            <a href="{{ url_for('main.movie_details', movie_id=movie['movie_id']) }}">
+                <div style="height: 350px; overflow: hidden;">
+                    <img src="{{ url_for('static', filename='images/' + movie['image_url']) }}" 
+                        alt="{{ movie['title'] }}" 
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </a>
+            
+            <div class="movie-info">
+                <h3>{{ movie['title'] }}</h3>
+                <p><small>{{ movie['duration'] }} mins | {{ movie['rating'] }}</small></p>
+                
+                <a href="{{ url_for('main.movie_details', movie_id=movie['movie_id']) }}" class="btn-book" style="display: block; text-align: center; text-decoration: none;">
+                    View Showtimes
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

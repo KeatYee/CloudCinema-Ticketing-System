@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Seats - {{ show['title'] }}</title>
+
+    <style>
+        body {
+            background: #141414;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 30px;
+            background: #000;
+        }
+
+        nav a {
+            color: #e50914;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .cinema {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 24px;
+            background: #1f1f1f;
+            border-radius: 10px;
+        }
+
+        .screen {
+            width: 80%;
+            height: 18px;
+            background: #ccc;
+            margin: 0 auto 30px;
+            border-radius: 0 0 40px 40px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 18px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .row-label {
+            text-align: center;
+            margin: 12px 0 6px;
+            color: #aaa;
+            font-weight: bold;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(10, 56px);
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .seat {
+            width: 56px;
+            height: 56px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .seat.available {
+            background: #2a2a2a;
+            border: 1px solid #444;
+        }
+
+        .seat.booked {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .seat.selected {
+            background: #e50914;
+            color: #fff;
+        }
+
+        .seat input {
+            display: none;
+        }
+
+        .btn-book {
+            margin-top: 24px;
+            width: 100%;
+            padding: 14px;
+            background: #e50914;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="{{ url_for('main.index') }}">← Back</a>
+</nav>
+
+<div class="cinema">
+    <h1>{{ show['title'] }}</h1>
+    <div class="screen">SCREEN</div>
+
+    <form method="POST">
+        {% for row, seats in seat_map.items() %}
+            <div class="row-label">Row {{ row }}</div>
+            <div class="row">
+                {% for seat in seats %}
+                    {% set disabled = seat['seat_id'] in booked_ids %}
+                    <label class="seat {% if disabled %}booked{% else %}available{% endif %}">
+                        {{ row }}{{ seat['seat_number'] }}
+                        <input type="checkbox"
+                               name="seat"
+                               value="{{ seat['seat_id'] }}"
+                               {% if disabled %}disabled{% endif %}>
+                    </label>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-book">Confirm Booking</button>
+    </form>
+</div>
+
+<script>
+    document.querySelectorAll('.seat').forEach(seat => {
+        if (seat.classList.contains('booked')) return;
+
+        seat.addEventListener('click', () => {
+            const checkbox = seat.querySelector('input');
+            checkbox.checked = !checkbox.checked;
+            seat.classList.toggle('selected', checkbox.checked);
+        });
+    });
+</script>
+
+</body>
+</html>

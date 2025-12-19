@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('main.index') }}">← Home</a>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div style="max-width:1000px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
+        <h1 style="color:#e50914;">Admin Dashboard</h1>
+        <p><a href="{{ url_for('admin.admin_add_movie') }}" class="btn-book">Add Movie</a> <a href="{{ url_for('admin.admin_add_showtime') }}" class="btn-book">Add Showtime</a></p>
+
+        <h2>Movies</h2>
+        <ul>
+            {% for m in movies %}
+                <li>{{ m.title }} ({{ m.duration }} mins)</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Showtimes</h2>
+        <ul>
+            {% for s in showtimes %}
+                <li>{{ s.title }} — {{ s.show_date }} {{ s.show_time }} ({{ s.screen_name }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

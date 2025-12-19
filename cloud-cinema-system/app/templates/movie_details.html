@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>{{ movie['title'] }} - Details</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('main.index') }}">← Back to Movies</a>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+                {% if session.get('role') == 'admin' %}
+                    <a href="{{ url_for('admin.admin_index') }}">Admin</a>
+                {% endif %}
+            {% else %}
+                <div>Hi, Guest</div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div style="max-width: 900px; margin: 40px auto; padding: 30px; background: #1f1f1f; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        
+        <div style="display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap;">
+            
+            <div style="flex: 1; min-width: 250px;">
+                <img src="{{ url_for('static', filename='images/' + movie['image_url']) }}" 
+                     alt="{{ movie['title'] }}" 
+                     style="width: 100%; border-radius: 8px; border: 1px solid #333;">
+            </div>
+
+            <div style="flex: 2; min-width: 300px;">
+                <h1 style="color: #e50914; margin-top: 0; font-size: 2.5rem;">{{ movie['title'] }}</h1>
+                <p style="font-size: 1.1rem; color: #bbb;">
+                    <strong>Rating:</strong> {{ movie['rating'] }} | 
+                    <strong>Duration:</strong> {{ movie['duration'] }} mins
+                </p>
+                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+                <h3>Description</h3>
+                <p style="line-height: 1.6; color: #ddd;">{{ movie['description'] }}</p>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
+
+        <h3 style="margin-bottom: 20px;">Select a Showtime</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+            {% for show in showtimes %}
+                <div style="padding: 20px; border: 1px solid #333; background: #2a2a2a; border-radius: 8px; text-align: center; transition: 0.3s;" onmouseover="this.style.borderColor='#e50914'" onmouseout="this.style.borderColor='#333'">
+                    <strong style="color: #bbb;">{{ show['show_date'] }}</strong><br>
+                    <span style="font-size: 1.4rem; font-weight: bold; color: #fff; display: block; margin: 10px 0;">{{ show['show_time'] }}</span>
+                    <small style="color: #888;">{{ show['screen_name'] }}</small><br>
+                    <div style="margin: 15px 0; color: #e50914; font-weight: bold;">${{ show['price'] }}</div>
+                    
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('booking.select_seats', showtime_id=show['showtime_id']) }}" class="btn-book" style="text-decoration: none; display: block; padding: 8px;">Select Seats</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" style="color: #666; font-size: 0.8rem; text-decoration: none;">Login to Book</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p>No showtimes available for this movie yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Add Movie</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('admin.admin_index') }}">← Back to Admin</a>
+        <div>Admin</div>
+    </nav>
+
+    <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
+        <h1 style="color:#e50914;">Add Movie</h1>
+        <form method="POST">
+            <input name="title" placeholder="Title" required><br><br>
+            <input name="duration" placeholder="Duration (mins)" type="number" required><br><br>
+            <input name="rating" placeholder="Rating"><br><br>
+            <input name="image_url" placeholder="Image filename (in static/images)"><br><br>
+            <textarea name="description" placeholder="Description"></textarea><br><br>
+            <button class="btn-book" type="submit">Add Movie</button>
+        </form>
+    </div>
+</body>
+</html>
