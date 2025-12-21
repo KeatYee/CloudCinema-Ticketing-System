@@ -28,6 +28,27 @@ nav a:hover {
     color: #e50914;
 }
 
+/* Logo / page title on left, links on right */
+nav .logo, nav .page-title {
+    color: #e50914;
+    font-weight: 800;
+    font-size: 1.05rem;
+    text-decoration: none;
+}
+
+nav > div { /* right side links */
+    display:flex; align-items:center; gap:12px;
+}
+
+/* Auth card */
+.auth-wrapper{min-height:70vh;display:flex;align-items:center;justify-content:center;padding:40px}
+.auth-card{background:#171717;padding:28px;border-radius:12px;max-width:420px;width:100%;box-shadow:0 8px 24px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03)}
+.auth-card h2{margin:0 0 12px;color:#e50914}
+.auth-card input{width:100%;padding:10px 12px;margin:8px 0;border-radius:8px;border:1px solid #222;background:#0b0b0b;color:#fff}
+.auth-card button{width:100%;padding:10px;border-radius:8px;border:none;background:#e50914;color:#fff;font-weight:700;cursor:pointer}
+.auth-card a{color:#9aa0a6}
+.auth-card p{color:#9aa0a6;font-size:0.95rem}
+
 /* Hero Section */
 header {
     text-align: center;

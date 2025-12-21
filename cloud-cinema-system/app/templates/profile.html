@@ -7,7 +7,7 @@
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('main.index') }}">← Back to Movies</a>
+        <div class="page-title"><a href="{{ url_for('main.index') }}">← Back to Movies</a></div>
         <div>
             {% if session.get('user_id') %}
                 <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
@@ -28,8 +28,9 @@
                 <div style="font-size:1.2rem;font-weight:bold;">{{ user.name }}</div>
                 <div style="color:#aaa;">{{ user.email }}</div>
             </div>
-            <div style="flex-shrink:0;">
+            <div style="flex-shrink:0;display:flex;gap:8px;">
                 <a href="{{ url_for('auth.edit_profile') }}" style="background:#444;border-radius:6px;padding:8px 12px;color:#fff;text-decoration:none;">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" style="background:#a00;border-radius:6px;padding:8px 12px;color:#fff;text-decoration:none;">Logout</a>
             </div>
         </div>
 

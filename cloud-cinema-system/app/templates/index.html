@@ -9,7 +9,7 @@
 <body>
 
     <nav>
-        <div class="logo">🎬 CLOUD CINEMA</div>
+        <div class="page-title">🎬 CLOUD CINEMA</div>
         <div>
             {% if session.get('user_id') %}
                 <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>

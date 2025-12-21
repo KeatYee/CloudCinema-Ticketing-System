@@ -7,7 +7,7 @@
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('main.index') }}">← Back to Movies</a>
+        <div class="page-title"><a href="{{ url_for('main.index') }}">← Back to Movies</a></div>
         <div>
             {% if session.get('user_id') %}
                 <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>

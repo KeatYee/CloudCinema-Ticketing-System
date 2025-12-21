@@ -7,7 +7,15 @@
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('auth.profile') }}">← Back to Profile</a>
+        <div class="page-title"><a href="{{ url_for('auth.profile') }}">← Back to Profile</a></div>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+            {% endif %}
+        </div>
     </nav>
 
     <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">

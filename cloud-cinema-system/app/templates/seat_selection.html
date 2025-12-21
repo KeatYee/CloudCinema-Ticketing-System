@@ -109,7 +109,17 @@
 <body>
 
 <nav>
-    <a href="{{ url_for('main.index') }}">← Back</a>
+    <div class="page-title"><a href="{{ url_for('main.index') }}">← Back</a></div>
+    <div>
+        {% if session.get('user_id') %}
+            <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+            {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('admin.admin_index') }}">Admin</a>
+            {% endif %}
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Login</a>
+        {% endif %}
+    </div>
 </nav>
 
 <div class="cinema">
