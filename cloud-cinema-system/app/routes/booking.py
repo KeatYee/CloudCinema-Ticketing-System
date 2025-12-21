@@ -93,7 +93,7 @@ def select_seats(showtime_id):
             cursor.execute("""
                 SELECT bs.seat_id FROM booking_seats bs
                 JOIN bookings b ON bs.booking_id = b.booking_id
-                WHERE b.showtime_id = %s
+                WHERE b.showtime_id = %s AND b.cancelled = 0
             """, (showtime_id,))
             booked = cursor.fetchall()
             booked_ids = {r['seat_id'] for r in booked}
@@ -102,3 +102,48 @@ def select_seats(showtime_id):
         db.close()
 
     return render_template('seat_selection.html', show=show, seat_map=seat_map, booked_ids=booked_ids)
+
+
+@booking_bp.route('/cancel_booking', methods=['POST'])
+def cancel_booking():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+
+    booking_id = request.form.get('booking_id')
+    if not booking_id:
+        flash('Invalid booking.')
+        return redirect(url_for('auth.profile'))
+
+    try:
+        bid = int(booking_id)
+    except ValueError:
+        flash('Invalid booking id.')
+        return redirect(url_for('auth.profile'))
+
+    db = current_app.get_db_connection()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute('SELECT user_id FROM bookings WHERE booking_id = %s', (bid,))
+            row = cursor.fetchone()
+            if not row or row['user_id'] != session['user_id']:
+                flash('Booking not found or access denied.')
+                return redirect(url_for('auth.profile'))
+
+            # Delete booked seats to free them
+            cursor.execute('DELETE FROM booking_seats WHERE booking_id = %s', (bid,))
+
+            # Mark booking cancelled (soft delete). If `cancelled` column missing, fallback to deleting booking row.
+            try:
+                cursor.execute('UPDATE bookings SET cancelled = 1 WHERE booking_id = %s', (bid,))
+            except Exception:
+                cursor.execute('DELETE FROM bookings WHERE booking_id = %s', (bid,))
+
+            db.commit()
+            flash('Booking cancelled and seats freed.')
+    except Exception:
+        db.rollback()
+        flash('Failed to cancel booking.')
+    finally:
+        db.close()
+
+    return redirect(url_for('auth.profile'))

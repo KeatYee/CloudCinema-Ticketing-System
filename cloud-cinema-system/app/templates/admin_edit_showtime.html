@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Edit Showtime</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('admin.admin_index') }}">← Back to Admin</a>
+    </nav>
+
+    <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
+        <h1>Edit Showtime</h1>
+        <form method="post">
+            <label>Movie<br>
+                <select name="movie_id">
+                    {% for m in movies %}
+                        <option value="{{ m.movie_id }}" {% if showtime.movie_id==m.movie_id %}selected{% endif %}>{{ m.title }}</option>
+                    {% endfor %}
+                </select>
+            </label><br>
+            <label>Screen<br>
+                <select name="screen_id">
+                    {% for sc in screens %}
+                        <option value="{{ sc.screen_id }}" {% if showtime.screen_id==sc.screen_id %}selected{% endif %}>{{ sc.screen_name }}</option>
+                    {% endfor %}
+                </select>
+            </label><br>
+            <label>Show Date<br><input type="date" name="show_date" value="{{ showtime.show_date }}" required></label><br>
+            <label>Show Time<br><input type="time" name="show_time" value="{{ showtime.show_time }}" required></label><br>
+            <label>Price<br><input name="price" value="{{ showtime.price }}" required></label><br>
+            <button type="submit" class="btn-book">Save</button>
+        </form>
+    </div>
+</body>
+</html>

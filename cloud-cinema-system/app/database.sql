@@ -71,6 +71,7 @@ CREATE TABLE bookings (
     user_id INT NOT NULL,
     showtime_id INT NOT NULL,
     booking_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    cancelled TINYINT(1) DEFAULT 0,
 
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (showtime_id) REFERENCES showtimes(showtime_id)
