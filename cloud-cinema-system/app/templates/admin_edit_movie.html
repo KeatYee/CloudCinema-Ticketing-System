@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Edit Movie</title>
+</head>
+<body>
+    <nav>
+        <div class="page-title"><a href="{{ url_for('admin.admin_index') }}">← Back to Admin</a></div>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
+        <h1>Edit Movie</h1>
+        <form method="post">
+            <label>Title<br><input name="title" value="{{ movie.title }}" required></label><br>
+            <label>Duration (mins)<br><input name="duration" value="{{ movie.duration }}" required></label><br>
+            <label>Rating<br><input name="rating" value="{{ movie.rating }}"></label><br>
+            <label>Image filename (static/images/)<br><input name="image_url" value="{{ movie.image_url }}"></label><br>
+            <label>Description<br><textarea name="description">{{ movie.description }}</textarea></label><br>
+            <button type="submit" class="btn-book">Save</button>
+        </form>
+    </div>
+</body>
+</html>

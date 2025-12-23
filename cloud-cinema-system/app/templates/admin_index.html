@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <nav>
+        <div class="page-title"><a href="{{ url_for('main.index') }}">← Home</a></div>
+        <div>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div style="max-width:1000px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
+        <h1 style="color:#e50914;">Admin Dashboard</h1>
+        <p>
+            <a href="{{ url_for('admin.admin_add_movie') }}" class="btn-book">Add Movie</a>
+            <a href="{{ url_for('admin.admin_add_showtime') }}" class="btn-book">Add Showtime</a>
+            <a href="{{ url_for('admin.admin_add_screen') }}" class="btn-book">Add Screen</a>
+            <a href="{{ url_for('admin.admin_bookings') }}" class="btn-book">Manage Bookings</a>
+        </p>
+
+        <h2>Movies</h2>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+            <thead>
+                <tr style="text-align:left;border-bottom:1px solid #333;"><th>Title</th><th>Duration</th><th>Rating</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for m in movies %}
+                    <tr style="border-bottom:1px solid #2a2a2a;">
+                        <td>{{ m.title }}</td>
+                        <td>{{ m.duration }}</td>
+                        <td>{{ m.rating }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.admin_edit_movie', movie_id=m.movie_id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('admin.admin_delete_movie', movie_id=m.movie_id) }}" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete movie and its showtimes?');">
+                                <button type="submit" style="background:none;border:0;color:#f66;cursor:pointer;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Showtimes</h2>
+        <table style="width:100%;border-collapse:collapse;">
+            <thead>
+                <tr style="text-align:left;border-bottom:1px solid #333;"><th>Movie</th><th>Show</th><th>Screen</th><th>Price</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for s in showtimes %}
+                    <tr style="border-bottom:1px solid #2a2a2a;">
+                        <td>{{ s.title }}</td>
+                        <td>{{ s.show_date }} {{ s.show_time }}</td>
+                        <td>{{ s.screen_name }}</td>
+                        <td>{{ s.price }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.admin_edit_showtime', showtime_id=s.showtime_id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('admin.admin_delete_showtime', showtime_id=s.showtime_id) }}" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete showtime and its bookings?');">
+                                <button type="submit" style="background:none;border:0;color:#f66;cursor:pointer;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
