@@ -1,32 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>Edit Profile</title>
-</head>
-<body>
-    <nav>
-        <div class="page-title"><a href="{{ url_for('auth.profile') }}">← Back to Profile</a></div>
-        <div>
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">Login</a>
-            {% endif %}
-        </div>
-    </nav>
+{% extends "base.html" %}
 
+{% block content %}
     <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
-        <h1>Edit Profile</h1>
-        <form method="post">
-            <label>Name<br><input name="name" value="{{ user.name }}" required></label><br>
-            <label>Email<br><input type="email" name="email" value="{{ user.email }}" required></label><br>
-            <label>New Password (leave blank to keep current)<br><input type="password" name="password"></label><br>
-            <label>Current Password (required if changing password)<br><input type="password" name="current_password"></label><br>
-            <button type="submit" class="btn-book">Save</button>
+        
+        <!-- Back Link -->
+        <div style="margin-bottom: 20px;">
+             <a href="{{ url_for('auth.profile') }}" style="color: #9aa0a6; text-decoration: none; font-weight: bold;">
+                &larr; Back to Profile
+            </a>
+        </div>
+
+        <h1 style="color:#e50914;">Edit Profile</h1>
+        
+        <form method="post" style="margin-top: 20px;">
+            <div style="margin-bottom: 15px;">
+                <label style="color: #ddd; display: block; margin-bottom: 5px;">Name</label>
+                <input name="name" value="{{ user.name }}" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="color: #ddd; display: block; margin-bottom: 5px;">Email</label>
+                <input type="email" name="email" value="{{ user.email }}" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="color: #ddd; display: block; margin-bottom: 5px;">New Password (leave blank to keep current)</label>
+                <input type="password" name="password" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="color: #ddd; display: block; margin-bottom: 5px;">Current Password (required if changing password)</label>
+                <input type="password" name="current_password" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
+            </div>
+            
+            <button type="submit" class="btn-book" style="width: auto; padding: 10px 30px;">Save Changes</button>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}
