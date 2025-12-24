@@ -1,57 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Cinema | Now Showing</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-    <nav>
-        <div class="page-title">🎬 CLOUD CINEMA</div>
-        <div>
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
-                {% if session.get('role') == 'admin' %}
-                    <a href="{{ url_for('admin.admin_index') }}">Admin</a>
-                {% endif %}
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">Login</a>
-                <a href="{{ url_for('auth.register') }}">Register</a>
-            {% endif %}
-        </div>
-    </nav>
-
-    <header>
-        <h1>Blockbuster Movies</h1>
-        <p>Experience the magic of cinema in the cloud</p>
+{% block content %}
+    <!-- Hero Section -->
+    <header style="margin-bottom: 40px; padding: 60px 20px; text-align: center; color: white; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover; border-radius: 0 0 15px 15px;">
+        <h1 style="font-size: 3.5rem; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); margin-bottom: 10px;">NOW SHOWING</h1>
+        <p style="font-size: 1.2rem; color: #ddd; max-width: 600px; margin: 0 auto;">Book your tickets for the latest blockbusters directly from the cloud.</p>
+        <a href="#movies-grid" style="display: inline-block; margin-top: 20px; padding: 10px 30px; background-color: #e50914; color: white; text-decoration: none; font-weight: bold; border-radius: 30px; transition: background 0.3s;">Browse Movies</a>
     </header>
 
-    <div class="movie-container">
+    <!-- Movie Grid -->
+    <div id="movies-grid" class="movie-container">
         {% for movie in movies %}
-        <div class="movie-card">
-            <a href="{{ url_for('main.movie_details', movie_id=movie['movie_id']) }}">
-                <div style="height: 350px; overflow: hidden;">
+        <div class="movie-card" style="position: relative;">
+            
+            <!-- Link to details page -->
+            <a href="{{ url_for('main.movie_details', movie_id=movie['movie_id']) }}" style="display: block; position: relative;">
+                <div style="height: 400px; overflow: hidden; border-bottom: 1px solid #333;">
+                    <!-- Rating Badge Overlay -->
+                    <span style="position: absolute; top: 10px; right: 10px; background-color: rgba(0,0,0,0.8); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; border: 1px solid #e50914; z-index: 2;">
+                        {{ movie['rating'] }}
+                    </span>
 
+                    <!-- FIX: Use direct S3 URL from database -->
                     <img src="{{ movie['image_url'] }}" 
-                        alt="{{ movie['title'] }}" 
-                        style="width: 100%; height: 100%; object-fit: cover;">
+                         alt="{{ movie['title'] }}" 
+                         style="width: 100%; height: 100%; object-fit: cover; display: block;">
                 </div>
             </a>
             
-            <div class="movie-info">
-                <h3>{{ movie['title'] }}</h3>
-                <p><small>{{ movie['duration'] }} mins | {{ movie['rating'] }}</small></p>
+            <div class="movie-info" style="text-align: center;">
+                <h3 style="font-size: 1.2rem; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ movie['title'] }}</h3>
                 
-                <a href="{{ url_for('main.movie_details', movie_id=movie['movie_id']) }}" class="btn-book" style="display: block; text-align: center; text-decoration: none;">
-                    View Showtimes
+                <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">
+                    <span style="margin-right: 10px;">⏱ {{ movie['duration'] }} mins</span>
+                </p>
+                
+                <a href="{{ url_for('main.movie_details', movie_id=movie['movie_id']) }}" class="btn-book">
+                    BOOK TICKET
                 </a>
             </div>
         </div>
+        {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; color: #777; padding: 50px;">
+            <h3>No movies found.</h3>
+            <p>Check back later for new releases!</p>
+        </div>
         {% endfor %}
     </div>
-
-</body>
-</html>
+{% endblock %}
