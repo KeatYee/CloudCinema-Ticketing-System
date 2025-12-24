@@ -1,4 +1,5 @@
 -- USE THE EXISTING DATABASE
+-- Use the database created in RDS (matches DB_NAME in .env)
 USE moviedb;
 
 -- =========================
@@ -22,7 +23,7 @@ CREATE TABLE movies (
     duration INT NOT NULL,              -- minutes
     rating VARCHAR(10),
     description TEXT,
-    image_url VARCHAR(255)              -- poster / thumbnail image
+    image_url VARCHAR(500)              -- poster / thumbnail image (Increased length for S3 URLs)
 );
 
 -- =========================
@@ -89,7 +90,11 @@ CREATE TABLE booking_seats (
     UNIQUE (seat_id, booking_id)
 );
 
-INSERT INTO users (name, email, pass) VALUES ('John Doe', 'john@example.com', 'password');
+-- 1. INSERT USERS (With Hashed Password)
+-- The password hash below corresponds to the plain text: "password"
+INSERT INTO users (name, email, pass, role) VALUES 
+('John Doe', 'john@example.com', 'scrypt:32768:8:1$7q2ZnJpD5QqN3AoO$396fae67ae7fadc7726ed16e55ed8b82a6565e2648b609e9fe74f4bc64da8902005e6c3424e9b7a58be6d6ab7d76ce33b1a1db4b7daa58aed0a0cafffc229521', 'customer');
+
 -- To create an admin user with a hashed password, run the following Python snippet
 -- from the project root (this will print an SQL statement to run in MySQL):
 --
@@ -101,9 +106,11 @@ INSERT INTO users (name, email, pass) VALUES ('John Doe', 'john@example.com', 'p
 --
 -- Copy the printed INSERT and run it in your MySQL client.
 
+-- 2. INSERT MOVIES (With S3 URLs)
+-- Ensure these files exist in your S3 bucket: csc3074-cloud-cinema-group
 INSERT INTO movies (title, duration, rating, description, image_url) VALUES 
-('Dune: Part Two', 166, 'PG-13', 'Paul Atreides unites with Chani and the Fremen while on a warpath of revenge.', 'dune2.jpg'),
-('Oppenheimer', 180, 'R', 'The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.', 'oppenheimer.jpg');
+('Dune: Part Two', 166, 'PG-13', 'Paul Atreides unites with Chani and the Fremen while on a warpath of revenge.', 'https://csc3074-cloud-computing-assignment-22067110.s3.us-east-1.amazonaws.com/dune2.jpg'),
+('Oppenheimer', 180, 'R', 'The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.', 'https://csc3074-cloud-computing-assignment-22067110.s3.us-east-1.amazonaws.com/oppenheimer.jpg');
 
 INSERT INTO screens (screen_name, total_seats) VALUES ('Grand Hall 1', 100);
 
