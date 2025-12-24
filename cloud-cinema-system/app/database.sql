@@ -94,6 +94,10 @@ CREATE TABLE booking_seats (
 -- The password hash below corresponds to the plain text: "password"
 INSERT INTO users (name, email, pass, role) VALUES 
 ('John Doe', 'john@example.com', 'scrypt:32768:8:1$7q2ZnJpD5QqN3AoO$396fae67ae7fadc7726ed16e55ed8b82a6565e2648b609e9fe74f4bc64da8902005e6c3424e9b7a58be6d6ab7d76ce33b1a1db4b7daa58aed0a0cafffc229521', 'customer');
+-- Admin: 'Admin User' (Password: 'admin123')
+-- Generated using werkzeug.security.generate_password_hash('admin123')
+INSERT INTO users (name, email, pass, role) VALUES 
+('Admin User', 'admin@example.com', 'scrypt:32768:8:1$TgY1QajwhyBpmQIN$fa779dce144aada71022179a22f528e3b2e23a4fe7391c96b02c83dc77e2c4023e033148bed12e1f478150ce98d8e5977c7a211f505a5fa040f662688b4ca0f4', 'admin');
 
 -- To create an admin user with a hashed password, run the following Python snippet
 -- from the project root (this will print an SQL statement to run in MySQL):
@@ -105,6 +109,11 @@ INSERT INTO users (name, email, pass, role) VALUES
 -- ```
 --
 -- Copy the printed INSERT and run it in your MySQL client.
+----------------------------------------------------
+--Already added admin:
+------Email: admin@example.com
+------Password: admin123
+----------------------------------------------------
 
 -- 2. INSERT MOVIES (With S3 URLs)
 -- Ensure these files exist in your S3 bucket: csc3074-cloud-cinema-group
