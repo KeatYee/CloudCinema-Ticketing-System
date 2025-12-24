@@ -111,6 +111,9 @@ header {
     cursor: pointer;
     width: 100%;
     font-weight: bold;
+    text-align: center;
+    display: block;
+    text-decoration: none;
 }
 
 .btn-book:hover {
