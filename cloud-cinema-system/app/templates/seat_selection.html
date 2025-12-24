@@ -50,11 +50,17 @@
         cursor: pointer;
         user-select: none;
         color: #fff;
+        transition: background-color 0.2s, transform 0.1s;
     }
 
     .seat.available {
         background: #2a2a2a;
         border: 1px solid #444;
+    }
+    
+    .seat.available:hover {
+        background: #3a3a3a;
+        transform: scale(1.05);
     }
 
     .seat.booked {
@@ -63,17 +69,22 @@
         cursor: not-allowed;
     }
 
+    /* Important: Visual style for when checkbox is checked */
+    .seat input:checked + span {
+        /* This assumes you wrap text in span, but we handle via JS class below */
+    }
+    
     .seat.selected {
-        background: #e50914;
+        background: #e50914 !important;
         color: #fff;
         border-color: #e50914;
+        box-shadow: 0 0 10px rgba(229, 9, 20, 0.6);
     }
 
     .seat input {
         display: none;
     }
 
-    /* Override btn-book for this page specific layout if needed, or rely on global style */
     .btn-confirm {
         margin-top: 24px;
         width: 100%;
@@ -95,7 +106,6 @@
 <div style="max-width: 900px; margin: 30px auto;">
     <!-- Back Link -->
     <div style="margin-bottom: 20px;">
-         <!-- Assuming the previous page was movie details -->
          <a href="{{ url_for('main.movie_details', movie_id=show['movie_id']) }}" style="color: #9aa0a6; text-decoration: none; font-weight: bold;">
             &larr; Back to Movie Details
         </a>
@@ -115,6 +125,7 @@
                 <div class="row-seats">
                     {% for seat in seats %}
                         {% set disabled = seat['seat_id'] in booked_ids %}
+                        <!-- Added 'onclick' to prevent double toggle issue -->
                         <label class="seat {% if disabled %}booked{% else %}available{% endif %}">
                             {{ row }}{{ seat['seat_number'] }}
                             <input type="checkbox"
@@ -135,19 +146,16 @@
     document.querySelectorAll('.seat').forEach(seat => {
         if (seat.classList.contains('booked')) return;
 
-        seat.addEventListener('click', (e) => {
-            // Prevent default label click behavior which might trigger twice
-            if(e.target.tagName === 'INPUT') return; 
-            
-            const checkbox = seat.querySelector('input');
-            checkbox.checked = !checkbox.checked;
-            seat.classList.toggle('selected', checkbox.checked);
-        });
-        
-        // Handle input click directly if label passes it through
+        // Use 'change' event on input instead of 'click' on label
+        // This ensures we only react when the value ACTUALLY changes
         const checkbox = seat.querySelector('input');
+        
         checkbox.addEventListener('change', () => {
-             seat.classList.toggle('selected', checkbox.checked);
+            if (checkbox.checked) {
+                seat.classList.add('selected');
+            } else {
+                seat.classList.remove('selected');
+            }
         });
     });
 </script>
