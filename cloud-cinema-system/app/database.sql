@@ -1,6 +1,5 @@
--- Create Database
-CREATE DATABASE IF NOT EXISTS cinema_booking;
-USE cinema_booking;
+-- USE THE EXISTING DATABASE
+USE moviedb;
 
 -- =========================
 -- USERS
