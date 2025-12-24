@@ -1,33 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>Add Movie</title>
-</head>
-<body>
-    <nav>
-        <div class="page-title"><a href="{{ url_for('admin.admin_index') }}">← Back to Admin</a></div>
-        <div>
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">Login</a>
-            {% endif %}
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
-        <h1 style="color:#e50914;">Add Movie</h1>
-        <form method="POST">
-            <label>Title<br><input name="title" placeholder="Title" required></label><br><br>
-            <label>Duration (mins)<br><input name="duration" placeholder="Duration (mins)" type="number" required></label><br><br>
-            <label>Rating<br><input name="rating" placeholder="Rating"></label><br><br>
-            <label>Image filename (in static/images)<br><input name="image_url" placeholder="Image filename (in static/images)"></label><br><br>
-            <label>Description<br><textarea name="description" placeholder="Description"></textarea></label><br><br>
-            <button class="btn-book" type="submit">Add Movie</button>
-        </form>
+{% block content %}
+<div style="max-width:700px;margin:30px auto;padding:30px;background:#1f1f1f;border-radius:10px;box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    
+    <!-- Back Link -->
+    <div style="margin-bottom: 20px;">
+         <a href="{{ url_for('admin.admin_index') }}" style="color: #9aa0a6; text-decoration: none; font-weight: bold;">
+            &larr; Back to Admin Dashboard
+        </a>
     </div>
-</body>
-</html>
+
+    <h1 style="color:#e50914; margin-bottom: 25px; text-align: center;">Add New Movie</h1>
+    
+    <form method="POST">
+        <!-- Title Input -->
+        <div style="margin-bottom: 20px;">
+            <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Movie Title</label>
+            <input name="title" placeholder="e.g. The Dark Knight" required 
+                   style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+        </div>
+
+        <div style="display: flex; gap: 20px;">
+            <!-- Duration Input -->
+            <div style="flex: 1; margin-bottom: 20px;">
+                <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Duration (mins)</label>
+                <input name="duration" placeholder="e.g. 152" type="number" required 
+                       style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+            </div>
+
+            <!-- Rating Input -->
+            <div style="flex: 1; margin-bottom: 20px;">
+                <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Rating</label>
+                <input name="rating" placeholder="e.g. PG-13" 
+                       style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+            </div>
+        </div>
+
+        <!-- Image URL Input -->
+        <div style="margin-bottom: 20px;">
+            <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Poster Image URL</label>
+            <input name="image_url" placeholder="https://your-bucket.s3.amazonaws.com/poster.jpg" 
+                   style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+            <small style="color: #888; display: block; margin-top: 5px;">Paste the full S3 link here.</small>
+        </div>
+
+        <!-- Description Input -->
+        <div style="margin-bottom: 30px;">
+            <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Description</label>
+            <textarea name="description" placeholder="Write a short synopsis..." rows="5"
+                      style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px; resize: vertical;"></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-book" style="width: 100%; padding: 15px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;">
+            Add Movie
+        </button>
+    </form>
+</div>
+{% endblock %}

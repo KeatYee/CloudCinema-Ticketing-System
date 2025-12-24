@@ -1,33 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>Edit Movie</title>
-</head>
-<body>
-    <nav>
-        <div class="page-title"><a href="{{ url_for('admin.admin_index') }}">← Back to Admin</a></div>
-        <div>
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">Login</a>
-            {% endif %}
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
-        <h1>Edit Movie</h1>
-        <form method="post">
-            <label>Title<br><input name="title" value="{{ movie.title }}" required></label><br>
-            <label>Duration (mins)<br><input name="duration" value="{{ movie.duration }}" required></label><br>
-            <label>Rating<br><input name="rating" value="{{ movie.rating }}"></label><br>
-            <label>Image filename (static/images/)<br><input name="image_url" value="{{ movie.image_url }}"></label><br>
-            <label>Description<br><textarea name="description">{{ movie.description }}</textarea></label><br>
-            <button type="submit" class="btn-book">Save</button>
-        </form>
+{% block content %}
+<div style="max-width:700px;margin:30px auto;padding:30px;background:#1f1f1f;border-radius:10px;box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    
+    <!-- Back Link -->
+    <div style="margin-bottom: 20px;">
+         <a href="{{ url_for('admin.admin_index') }}" style="color: #9aa0a6; text-decoration: none; font-weight: bold;">
+            &larr; Back to Admin Dashboard
+        </a>
     </div>
-</body>
-</html>
+
+    <h1 style="color:#e50914; margin-bottom: 25px; text-align: center;">Edit Movie</h1>
+    
+    <form method="post">
+        <!-- Title -->
+        <div style="margin-bottom: 20px;">
+            <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Title</label>
+            <input name="title" value="{{ movie.title }}" required 
+                   style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+        </div>
+
+        <div style="display: flex; gap: 20px;">
+            <!-- Duration -->
+            <div style="flex: 1; margin-bottom: 20px;">
+                <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Duration (mins)</label>
+                <input name="duration" value="{{ movie.duration }}" required type="number"
+                       style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+            </div>
+
+            <!-- Rating -->
+            <div style="flex: 1; margin-bottom: 20px;">
+                <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Rating</label>
+                <input name="rating" value="{{ movie.rating }}" 
+                       style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+            </div>
+        </div>
+
+        <!-- Image URL (S3) -->
+        <div style="margin-bottom: 20px;">
+            <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Poster Image URL</label>
+            <input name="image_url" value="{{ movie.image_url }}" placeholder="https://your-bucket.s3.amazonaws.com/image.jpg"
+                   style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px;">
+            <small style="color: #888; display: block; margin-top: 5px;">Use the full S3 URL.</small>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom: 30px;">
+            <label style="color: #ddd; display: block; margin-bottom: 8px; font-weight: bold;">Description</label>
+            <textarea name="description" rows="5"
+                      style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 16px; resize: vertical;">{{ movie.description }}</textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-book" style="width: 100%; padding: 15px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;">
+            Save Changes
+        </button>
+    </form>
+</div>
+{% endblock %}

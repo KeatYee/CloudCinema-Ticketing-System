@@ -1,58 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>Manage Bookings</title>
-</head>
-<body>
-    <nav>
-        <div class="page-title"><a href="{{ url_for('admin.admin_index') }}">← Back to Admin</a></div>
-        <div>
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('auth.profile') }}">Hi, {{ session['name'] }}</a>
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">Login</a>
-            {% endif %}
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div style="max-width:1000px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
-        <h1>Current Bookings</h1>
-        {% if bookings %}
-            <table style="width:100%;border-collapse:collapse;">
+{% block content %}
+<div style="max-width:1000px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    
+    <!-- Back Link -->
+    <div style="margin-bottom: 20px;">
+         <a href="{{ url_for('admin.admin_index') }}" style="color: #9aa0a6; text-decoration: none; font-weight: bold;">
+            &larr; Back to Admin Dashboard
+        </a>
+    </div>
+
+    <h1 style="color:#e50914; margin-bottom: 25px;">Current Bookings</h1>
+    
+    {% if bookings %}
+        <div style="overflow-x: auto;">
+            <table style="width:100%;border-collapse:collapse; color: #ddd;">
                 <thead>
-                    <tr style="text-align:left;border-bottom:1px solid #333;">
-                        <th>User</th>
-                        <th>Movie</th>
-                        <th>Show</th>
-                        <th>Seats</th>
-                        <th>Booked At</th>
-                        <th></th>
+                    <tr style="text-align:left;border-bottom:1px solid #444;">
+                        <th style="padding: 12px 10px; color: #fff;">User</th>
+                        <th style="padding: 12px 10px; color: #fff;">Movie</th>
+                        <th style="padding: 12px 10px; color: #fff;">Show</th>
+                        <th style="padding: 12px 10px; color: #fff;">Seats</th>
+                        <th style="padding: 12px 10px; color: #fff;">Booked At</th>
+                        <th style="padding: 12px 10px;"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for b in bookings %}
-                        <tr style="border-bottom:1px solid #2a2a2a;">
-                            <td>{{ b.user_name }}</td>
-                            <td>{{ b.title }}</td>
-                            <td>{{ b.show_date }} {{ b.show_time }}</td>
-                            <td>{{ b.seats or '' }}</td>
-                            <td>{{ b.booking_time }}</td>
-                            <td>
+                        <tr style="border-bottom:1px solid #2a2a2a; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#2a2a2a'" onmouseout="this.style.backgroundColor='transparent'">
+                            <td style="padding: 12px 10px;">
+                                <strong>{{ b.user_name }}</strong>
+                            </td>
+                            <td style="padding: 12px 10px;">{{ b.title }}</td>
+                            <td style="padding: 12px 10px;">
+                                {{ b.show_date }} <span style="color: #e50914; font-weight: bold;">{{ b.show_time }}</span>
+                            </td>
+                            <td style="padding: 12px 10px;">{{ b.seats or '' }}</td>
+                            <td style="padding: 12px 10px; font-size: 0.9em; color: #aaa;">{{ b.booking_time }}</td>
+                            <td style="padding: 12px 10px; text-align: right;">
                                 <form method="post" action="{{ url_for('admin.admin_cancel_booking') }}" onsubmit="return confirm('Cancel this booking?');">
                                     <input type="hidden" name="booking_id" value="{{ b.booking_id }}">
-                                    <button type="submit" style="background:#a00;border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer;">Cancel</button>
+                                    <button type="submit" style="background:#a00;border:none;color:#fff;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.9em;">Cancel</button>
                                 </form>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p style="color:#aaa;">No current bookings.</p>
-        {% endif %}
-    </div>
-</body>
-</html>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: #777;">
+            <p>No active bookings found.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
