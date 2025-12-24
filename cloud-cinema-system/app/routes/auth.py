@@ -11,22 +11,20 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        # Hash the password for security
         hashed_pw = generate_password_hash(password)
         
         db = current_app.get_db_connection()
         try:
             with db.cursor() as cursor:
-                # Check if email is already taken
                 cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
                 if cursor.fetchone():
-                    flash("Email already registered!")
+                    flash("Email already registered!", "danger")
                     return redirect(url_for('auth.register'))
                 
-                # Insert new user
                 cursor.execute("INSERT INTO users (name, email, pass) VALUES (%s, %s, %s)", 
                                (name, email, hashed_pw))
                 db.commit()
+            flash("Registration successful! Please login.", "success")
             return redirect(url_for('auth.login'))
         finally:
             db.close()
@@ -44,15 +42,32 @@ def login():
                 cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
                 user = cursor.fetchone()
                 
-                # Check if user exists and password matches the hash
-                if user and check_password_hash(user['pass'], password):
+                # Check if user exists
+                password_match = False
+                if user:
+                    try:
+                        if check_password_hash(user['pass'], password):
+                            password_match = True
+                    except ValueError:
+                        # Fallback for plain text passwords (if any exist)
+                        if user['pass'] == password:
+                            password_match = True
+
+                if password_match:
                     session['user_id'] = user['user_id']
                     session['name'] = user['name']
-                    # store role for quick template checks (admin/customer)
-                    session['role'] = user.get('role', 'customer')
-                    return redirect(url_for('main.index'))
+                    role = user.get('role', 'customer')
+                    session['role'] = role
+                    
+                    flash(f"Welcome back, {user['name']}!", "success")
+                    
+                    # Redirect based on Role
+                    if role == 'admin':
+                        return redirect(url_for('admin.admin_index'))
+                    else:
+                        return redirect(url_for('main.index'))
                 else:
-                    flash("Invalid credentials!")
+                    flash("Invalid credentials!", "danger")
         finally:
             db.close()
     return render_template('login.html')
@@ -60,8 +75,8 @@ def login():
 @auth_bp.route('/logout')
 def logout():
     session.clear()
+    flash("You have been logged out.", "info")
     return redirect(url_for('main.index'))
-
 
 @auth_bp.route('/profile/edit', methods=['GET', 'POST'])
 def edit_profile():
@@ -78,21 +93,29 @@ def edit_profile():
                 password = request.form.get('password')
                 current_password = request.form.get('current_password')
 
-                # check email uniqueness
                 cursor.execute('SELECT user_id FROM users WHERE email = %s AND user_id != %s', (email, user_id))
                 if cursor.fetchone():
-                    flash('Email already in use by another account.')
+                    flash('Email already in use.', 'danger')
                     return redirect(url_for('auth.edit_profile'))
 
                 if password:
-                    # require current password to change to a new password
                     if not current_password:
-                        flash('Enter your current password to change to a new password.')
+                        flash('Enter current password to change it.', 'warning')
                         return redirect(url_for('auth.edit_profile'))
+                    
                     cursor.execute('SELECT pass FROM users WHERE user_id = %s', (user_id,))
                     rowp = cursor.fetchone()
-                    if not rowp or not check_password_hash(rowp.get('pass', ''), current_password):
-                        flash('Current password is incorrect.')
+                    
+                    curr_match = False
+                    try:
+                        if check_password_hash(rowp.get('pass', ''), current_password):
+                            curr_match = True
+                    except:
+                        if rowp.get('pass') == current_password:
+                            curr_match = True
+                            
+                    if not curr_match:
+                        flash('Current password is incorrect.', 'danger')
                         return redirect(url_for('auth.edit_profile'))
 
                     hashed = generate_password_hash(password)
@@ -102,7 +125,7 @@ def edit_profile():
 
                 db.commit()
                 session['name'] = name
-                flash('Profile updated.')
+                flash('Profile updated.', 'success')
                 return redirect(url_for('auth.profile'))
 
             cursor.execute('SELECT user_id, name, email, role, created_at FROM users WHERE user_id = %s', (user_id,))
@@ -111,7 +134,6 @@ def edit_profile():
         db.close()
 
     return render_template('profile_edit.html', user=user)
-
 
 @auth_bp.route('/profile')
 def profile():
@@ -124,21 +146,17 @@ def profile():
     user = None
     try:
         with db.cursor() as cursor:
-            # fetch user info for display
             cursor.execute('SELECT user_id, name, email, role, created_at FROM users WHERE user_id = %s', (user_id,))
             user = cursor.fetchone()
             cursor.execute("SELECT * FROM bookings WHERE user_id = %s ORDER BY booking_time DESC", (user_id,))
             rows = cursor.fetchall()
             for b in rows:
-                # fetch showtime/movie/screen
                 cursor.execute("SELECT s.*, m.title, m.image_url, sc.screen_name FROM showtimes s JOIN movies m ON s.movie_id = m.movie_id JOIN screens sc ON s.screen_id = sc.screen_id WHERE s.showtime_id = %s", (b['showtime_id'],))
                 show = cursor.fetchone()
-
-                # fetch seats
+                
                 cursor.execute("SELECT se.seat_row, se.seat_number FROM booking_seats bs JOIN seats se ON bs.seat_id = se.seat_id WHERE bs.booking_id = %s", (b['booking_id'],))
                 seat_rows = cursor.fetchall()
 
-                # determine if showtime is past by comparing show_date to today's date
                 is_past = False
                 cancelled_flag = bool(b.get('cancelled', 0)) if isinstance(b, dict) else False
                 if show:
@@ -161,7 +179,6 @@ def profile():
     finally:
         db.close()
 
-    # split into upcoming and past/cancelled for template
     upcoming = [b for b in bookings if not b['is_past'] and not b['cancelled']]
     past = [b for b in bookings if b['is_past'] or b['cancelled']]
 
