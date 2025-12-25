@@ -1,39 +1,102 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div style="max-width:700px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
+    <div style="max-width:900px;margin:30px auto;padding:20px;background:#1f1f1f;border-radius:8px;">
         
         <!-- Back Link -->
         <div style="margin-bottom: 20px;">
-             <a href="{{ url_for('auth.profile') }}" style="color: #9aa0a6; text-decoration: none; font-weight: bold;">
-                &larr; Back to Profile
+             <!-- If Admin, go to Dashboard. If Customer, go to Home. -->
+             <a href="{{ url_for('admin.admin_index') if session.get('role') == 'admin' else url_for('main.index') }}" style="color: #9aa0a6; text-decoration: none; font-weight: bold;">
+                &larr; Back to {{ 'Dashboard' if session.get('role') == 'admin' else 'Movies' }}
             </a>
         </div>
 
-        <h1 style="color:#e50914;">Edit Profile</h1>
-        
-        <form method="post" style="margin-top: 20px;">
-            <div style="margin-bottom: 15px;">
-                <label style="color: #ddd; display: block; margin-bottom: 5px;">Name</label>
-                <input name="name" value="{{ user.name }}" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
+        <h1 style="color:#e50914;">My Profile</h1>
+
+        <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px;">
+            <div style="flex:1;color:#ddd;">
+                <div style="font-size:1.2rem;font-weight:bold;">{{ user.name }} <span style="font-size:0.8rem; background:#333; padding:2px 6px; border-radius:4px; margin-left:8px; vertical-align:middle;">{{ user.role|upper }}</span></div>
+                <div style="color:#aaa;">{{ user.email }}</div>
             </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="color: #ddd; display: block; margin-bottom: 5px;">Email</label>
-                <input type="email" name="email" value="{{ user.email }}" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
+            <div style="flex-shrink:0;display:flex;gap:8px;">
+                <a href="{{ url_for('auth.edit_profile') }}" style="background:#444;border-radius:6px;padding:8px 12px;color:#fff;text-decoration:none;">Edit Profile</a>
+                <a href="{{ url_for('auth.logout') }}" style="background:#a00;border-radius:6px;padding:8px 12px;color:#fff;text-decoration:none;">Logout</a>
             </div>
+        </div>
+
+        <!-- Only show Booking History if NOT Admin -->
+        {% if session.get('role') != 'admin' %}
             
-            <div style="margin-bottom: 15px;">
-                <label style="color: #ddd; display: block; margin-bottom: 5px;">New Password (leave blank to keep current)</label>
-                <input type="password" name="password" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
+            <hr style="border:0; border-top:1px solid #333; margin: 30px 0;">
+            <h2 style="color:#fff;margin-top:8px;">Your Bookings</h2>
+
+            {% if upcoming %}
+                <h3 style="color:#ccc; font-size:1.1rem; margin-top:20px;">Upcoming</h3>
+                <ul style="list-style:none;padding:0;margin:0;">
+                    {% for b in upcoming %}
+                        <li style="display:flex;gap:16px;align-items:flex-start;padding:12px;border:1px solid #333;margin-bottom:12px;border-radius:6px;">
+                            <div style="width:110px;flex-shrink:0;">
+                                {% if b.show.image_url %}
+                                    <img src="{{ b.show.image_url }}" alt="{{ b.show.title }}" style="width:100%;border-radius:6px;border:1px solid #222;">
+                                {% else %}
+                                    <div style="width:100%;height:150px;background:#2a2a2a;border-radius:6px;"></div>
+                                {% endif %}
+                            </div>
+                            <div style="flex:1;">
+                                <strong style="font-size:1.05rem;color:#e6e6e6;">{{ b.show.title }}</strong><br>
+                                <small style="color:#aaa;">{{ b.show.show_date }} {{ b.show.show_time }} — {{ b.show.screen_name }}</small>
+                                <p style="color:#ccc;margin:8px 0;">Seats: {% for s in b.seats %}{{ s.seat_row }}{{ s.seat_number }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+                                <p style="color:#888;font-size:0.9rem;">Booked: {{ b.booking.booking_time }}</p>
+                            </div>
+                            <div style="flex-shrink:0;">
+                                <form method="post" action="{{ url_for('booking.cancel_booking') }}" onsubmit="return confirm('Cancel this booking?');">
+                                    <input type="hidden" name="booking_id" value="{{ b.booking.booking_id }}">
+                                    <button type="submit" style="background:#a00;border:none;color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;">Cancel</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color:#aaa;">No upcoming bookings.</p>
+            {% endif %}
+
+            <div style="margin-top:18px;">
+                <button id="togglePast" style="background:none;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;">Show Past / Cancelled</button>
+                <div id="pastList" style="display:none;margin-top:12px;">
+                    {% if past %}
+                        <ul style="list-style:none;padding:0;margin:0;">
+                            {% for b in past %}
+                                <li style="display:flex;gap:16px;align-items:flex-start;padding:12px;border:1px solid #333;margin-bottom:12px;border-radius:6px;opacity:0.9;">
+                                    <div style="width:90px;flex-shrink:0;">
+                                        {% if b.show.image_url %}
+                                            <img src="{{ b.show.image_url }}" alt="{{ b.show.title }}" style="width:100%;border-radius:6px;border:1px solid #222;">
+                                        {% else %}
+                                            <div style="width:100%;height:120px;background:#2a2a2a;border-radius:6px;"></div>
+                                        {% endif %}
+                                    </div>
+                                    <div style="flex:1;">
+                                        <strong style="color:#ccc;">{{ b.show.title }}</strong>
+                                        <div style="color:#999;font-size:0.9rem;">{{ b.show.show_date }} {{ b.show.show_time }} — {{ b.show.screen_name }}</div>
+                                        <p style="color:#bbb;margin:6px 0;">Seats: {% for s in b.seats %}{{ s.seat_row }}{{ s.seat_number }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+                                        <p style="color:#777;font-size:0.85rem;">Booked: {{ b.booking.booking_time }}{% if b.cancelled %} — <span style="color:#f66;">Cancelled</span>{% endif %}</p>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p style="color:#aaa;">No past or cancelled bookings.</p>
+                    {% endif %}
+                </div>
             </div>
-            
-            <div style="margin-bottom: 25px;">
-                <label style="color: #ddd; display: block; margin-bottom: 5px;">Current Password (required if changing password)</label>
-                <input type="password" name="current_password" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff;">
-            </div>
-            
-            <button type="submit" class="btn-book" style="width: auto; padding: 10px 30px;">Save Changes</button>
-        </form>
+        {% endif %} <!-- End Admin Check -->
     </div>
+
+    <script>
+        document.getElementById('togglePast').addEventListener('click', function(){
+            var el = document.getElementById('pastList');
+            if(el.style.display === 'none' || el.style.display === ''){ el.style.display = 'block'; this.textContent = 'Hide Past / Cancelled'; }
+            else { el.style.display = 'none'; this.textContent = 'Show Past / Cancelled'; }
+        });
+    </script>
 {% endblock %}

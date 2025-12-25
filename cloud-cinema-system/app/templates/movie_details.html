@@ -45,7 +45,16 @@
                     <div style="margin: 15px 0; color: #e50914; font-weight: bold;">${{ show['price'] }}</div>
                     
                     {% if session.get('user_id') %}
-                        <a href="{{ url_for('booking.select_seats', showtime_id=show['showtime_id']) }}" class="btn-book" style="text-decoration: none; display: block; padding: 10px; border-radius: 5px;">Select Seats</a>
+                        <!-- ADMIN GUARD: Check if role is admin -->
+                        {% if session.get('role') == 'admin' %}
+                            <button class="btn-book" style="background: #444; color: #aaa; cursor: not-allowed; width: 100%; padding: 10px; border-radius: 5px; border:none;" disabled>
+                                Admin View Only
+                            </button>
+                        {% else %}
+                            <a href="{{ url_for('booking.select_seats', showtime_id=show['showtime_id']) }}" class="btn-book" style="text-decoration: none; display: block; padding: 10px; border-radius: 5px;">
+                                Select Seats
+                            </a>
+                        {% endif %}
                     {% else %}
                         <a href="{{ url_for('auth.login') }}" style="color: #9aa0a6; font-size: 0.9rem; text-decoration: none;">Login to Book</a>
                     {% endif %}
