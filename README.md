@@ -1,8 +1,20 @@
 **Scalable Cloud-Based Cinema Ticketing System**
-
 Course: CSC3074 CLOUD COMPUTING
 
-1. Installation Guide (How to Run Locally)
+**Project Overview**
+- App Type: Web Application (Flask/Python)
+- Database: Amazon RDS (MySQL)
+- Storage: Amazon S3 (Object Storage)
+- Infrastructure: AWS VPC, EC2, Application Load Balancer (ALB), Auto Scaling Group (ASG)
+
+
+**Key Features:**
+- Customer Portal: Register, browse movies, view details, and book tickets.
+- Admin Dashboard: Manage movies, showtimes, and halls securely.
+- Cloud Storage: Movie posters are stored in Amazon S3.
+- Security: Passwords are hashed using Scrypt; Database is isolated in a Private Subnet.
+
+**Installation Guide (How to Run Locally)**
 Follow these steps to set up the project on your local machine for development.
 
 Prerequisites
@@ -43,17 +55,12 @@ DB_NAME=moviedb
 # Storage
 S3_BUCKET=csc3074-cloud-computing-assignment-22067110
 
-
-**Step 5: Run the Application**
+**Run the Application**
 Start the Flask development server.
-
 python app.py
-
 Open your web browser and navigate to: http://127.0.0.1:5000
 
-
-
-**2. Deployment Guide (AWS EC2)**
+**Deployment Guide (AWS EC2)**
 This application is designed to run on an Ubuntu EC2 instance using Gunicorn as the production WSGI server.
 
 Connecting to the Server:
@@ -70,19 +77,7 @@ Troubleshooting:
 - Check Logs:sudo journalctl -u cinema.service -n 50 --no-pager
 
 
-
-**3. Project Overview**
-This application serves as a scalable cinema ticketing platform. It demonstrates cloud-native architecture principles by integrating compute, database, and storage services.
-
-**Key Features:**
-- Customer Portal: Register, browse movies, view details, and book tickets.
-- Admin Dashboard: Manage movies, showtimes, and halls securely.
-- Cloud Storage: Movie posters are stored in Amazon S3.
-- Security: Passwords are hashed using Scrypt; Database is isolated in a Private Subnet.
-
-
-
-**4. Database Setup**
+**Database Setup**
 The project uses a MySQL database hosted on AWS RDS. The schema and initial data are provided in the database.sql file.
 
 To reset or initialize the database:
@@ -90,8 +85,13 @@ To reset or initialize the database:
 - Run the commands found in database.sql to create tables and seed initial data.
 
 
+**How to Run** (Cloud Production)
+- Here are the details to access and evaluate the project:
+Access URL: http://movie-app-alb-845460910.us-east-1.elb.amazonaws.com/
+Git Repository: https://github.com/KeatYee/CloudCinema-Ticketing-System.git
 
-**5. Project Structure**
+
+**Project Structure**
 cloud-cinema-system/
 ├── app/
 │   ├── routes/         # Python logic for different modules (auth, admin, etc.)
