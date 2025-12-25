@@ -19,6 +19,9 @@ Course: CSC3074 CLOUD COMPUTING
 - Here are the details to access and evaluate the project:
 Access URL: http://movie-app-alb-845460910.us-east-1.elb.amazonaws.com/
 Git Repository: https://github.com/KeatYee/CloudCinema-Ticketing-System.git
+For App admin login:
+email: admin@example.com
+password: admin123
 
 
 **Project Structure**
